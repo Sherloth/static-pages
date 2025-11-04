@@ -6,7 +6,7 @@ import unittest
 sys.path.append(os.path.dirname(__file__))
 
 from textnode import TextNode, TextType
-from functions import split_nodes_delimiter
+from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 
 class TestTextNode(unittest.TestCase):
@@ -129,7 +129,17 @@ class TestSplitNodesDelimiter(unittest.TestCase):
                 TextNode("!", TextType.TEXT),
             ],
         )
-
-
+    
+    def test_regex_markdown(self):
+        a = "I'm a little ![teapot](https://example.com/teapot.png)"
+        b = "This has [lane](https://example.com/lane) and [hunter](https://example.org/hunter)"
+        self.assertEqual(
+            extract_markdown_images(a),
+            [("teapot", "https://example.com/teapot.png")]
+        )
+        self.assertEqual(
+            extract_markdown_links(b),
+            [("lane", "https://example.com/lane"), ("hunter", "https://example.org/hunter")]
+        )
 if __name__ == "__main__":
     unittest.main()
