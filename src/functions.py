@@ -77,3 +77,22 @@ def split_nodes_link(old_nodes):
                 new_nodes.append(TextNode(anchor, TextType.LINK, url))
 
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = list(split_nodes_delimiter(nodes, "`", TextType.CODE))
+    nodes = list(split_nodes_delimiter(nodes, "**", TextType.BOLD))
+    nodes = list(split_nodes_delimiter(nodes, "_", TextType.ITALIC))
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
+
+def markdown_to_blocks(markdown):
+    raw_blocks = markdown.split("\n\n")
+    blocks = []
+    for block in raw_blocks:
+        clean = block.strip()
+        if clean:
+            blocks.append(clean)
+    return blocks
