@@ -6,12 +6,14 @@ import unittest
 sys.path.append(os.path.dirname(__file__))
 
 from textnode import TextNode, TextType
+from htmlnode import LeafNode
 from functions import (
     split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_image,
     split_nodes_link,
+    text_node_to_html_node,
 )
 
 
@@ -217,6 +219,27 @@ class TestSplitNodesImageAndLink(unittest.TestCase):
         img_node = TextNode("logo", TextType.IMAGE, "https://example.com/logo.png")
         nodes = split_nodes_image([img_node])
         self.assertEqual(nodes, [img_node])
+
+    class TestTextNodeToHtmlNode(unittest.TestCase):
+        def test_plain_text(self):
+            node = TextNode("hello", TextType.TEXT)
+            html = text_node_to_html_node(node)
+            self.assertIsInstance(html, LeafNode)
+            self.assertIsNone(html.tag)
+            self.assertEqual(html.value, "hello")
+
+        def test_bold(self):
+            node = TextNode("bold", TextType.BOLD)
+            html = text_node_to_html_node(node)
+            self.assertEqual(html.tag, "b")
+            self.assertEqual(html.value, "bold")
+
+        def test_link(self):
+            node = TextNode("boot.dev", TextType.LINK, "https://boot.dev")
+            html = text_node_to_html_node(node)
+            self.assertEqual(html.tag, "a")
+            self.assertEqual(html.value, "boot.dev")
+            self.assertEqual(html.props, {"href": "https://boot.dev"})
 
 
 if __name__ == "__main__":
